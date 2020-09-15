@@ -1,0 +1,92 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Social network with NodeJS",
+    "version": "1.0.0",
+    "title": "CMBook",
+    "contact": {
+      "email": "admin@cmbook.com"
+    }
+  },
+  "host": "cmbook.com.pe",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "cmb",
+      "description": "Get contact with people worldwide"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "List users",
+        "description": "List users",
+        "operationId": "listUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create user",
+        "description": "Create new user",
+        "operationId": "createUser",
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    }
+  }
+}
