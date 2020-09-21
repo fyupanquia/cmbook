@@ -1,10 +1,10 @@
 'use strict'
 const auth = require("../auth");
 
-const TABLA = "user";
+const TABLA = "users";
 
 module.exports = function (injectedStore) {
-  let store = injectedStore ? injectedStore : require("../../../store/dummy");
+  let store = injectedStore
 
   const upsert = async (body) => {
     const user = {
@@ -30,8 +30,8 @@ module.exports = function (injectedStore) {
   };
 
   return {
-    list: () => store.list(TABLA),
-    get: (id) => store.get(TABLA, id),
+    list: async () => store.list(TABLA),
+    get: async (id) => store.get(TABLA, id),
     upsert,
   };
 };
