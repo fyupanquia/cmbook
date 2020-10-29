@@ -4,6 +4,14 @@ module.exports = {
   api: {
     port: process.env.API_PORT || 3000,
   },
+  mysqlService: {
+    host: process.env.MYSQL_SERVICE_HOST || "localhost",
+    port: process.env.MYSQL_SERVICE_PORT || 3001,
+  },
+  postService: {
+    host: process.env.POST_SERVICE_HOST || "localhost",
+    port: process.env.POST_SERVICE_PORT || 3002,
+  },
   jwt: {
     secret: process.env.JWT_SECRET || "secret",
   },
