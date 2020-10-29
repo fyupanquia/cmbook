@@ -1,10 +1,10 @@
-'use strict'
+"use strict";
 const auth = require("../auth");
-
+const { nanoid } = require("nanoid");
 const TABLA = "users";
 
 module.exports = function (injectedStore) {
-  let store = injectedStore
+  let store = injectedStore;
 
   const upsert = async (body) => {
     const user = {
@@ -15,7 +15,7 @@ module.exports = function (injectedStore) {
     if (body.id) {
       user.id = body.id;
     } else {
-      user.id = Math.floor(Math.random() * 9999);
+      user.id = nanoid();
     }
 
     if (body.password || body.username) {
@@ -28,10 +28,24 @@ module.exports = function (injectedStore) {
 
     return store.upsert(TABLA, user);
   };
+  function follow(from, to) {
+    return store.insert(TABLA + "_follow", {
+      user_from: from,
+      user_to: to,
+    });
+  }
+
+  function getFollowed(id) {
+    return store.query(TABLA + "_follow", { user_from: id }, [
+      { table: TABLA, type: "inner", fromField: "user_from", toField: "id" },
+    ]);
+  }
 
   return {
     list: async () => store.list(TABLA),
     get: async (id) => store.get(TABLA, id),
     upsert,
+    follow,
+    getFollowed,
   };
 };

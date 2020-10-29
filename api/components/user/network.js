@@ -10,7 +10,7 @@ const list = async (req, res, next) => {
     const data = await Controller.list();
     response.success(req, res, data, 200);
   } catch (err) {
-    next();
+    next(err);
   }
 };
 const getById = async (req, res, next) => {
@@ -18,7 +18,7 @@ const getById = async (req, res, next) => {
     const data = await Controller.get(req.params.id);
     response.success(req, res, data, 200);
   } catch (err) {
-    next();
+    next(err);
   }
 };
 const upsert = async (req, res, next) => {
@@ -27,13 +27,31 @@ const upsert = async (req, res, next) => {
 
     response.success(req, res, data, 200);
   } catch (err) {
-    next();
+    next(err);
   }
 };
 
+function follow(req, res, next) {
+  Controller.follow(req.user.id, req.params.id)
+    .then((data) => {
+      response.success(req, res, data, 201);
+    })
+    .catch(next);
+}
+
+function getFollowed(req, res, next) {
+  Controller.getFollowed(req._auth.id)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+}
+
 // Routes
+router.get("/follow", secure("follow"), getFollowed);
 router.get("/", list);
 router.get("/:id", getById);
+router.post("/follow/:id", secure("follow"), follow);
 router.post("/", upsert);
 router.put("/", secure("update"), upsert);
 
