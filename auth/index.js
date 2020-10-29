@@ -4,7 +4,12 @@ const Err = require('../utils/error')
 const secret = config.jwt.secret;
 
 function sign(data) {
-  return jwt.sign(data, secret);
+  try {
+    data = typeof data === "object" ? JSON.stringify(data) : data;
+    return jwt.sign(data, secret);
+  } catch (error) {
+    return null
+  }
 }
 
 function verify(token) {
@@ -15,10 +20,14 @@ const check = {
   own: function (req, owner) {
     const decoded = decodeHeader(req);
     console.log(decoded);
-    console.log(owner);
     if (decoded.id !== owner) {
       throw new Err("Unauthorized", 401);
     }
+  },
+
+  logged: function (req, owner) {
+    const decoded = decodeHeader(req);
+    req._auth = decoded;
   },
 };
 

@@ -1,14 +1,20 @@
 const TABLA = "auth";
 const auth = require("../../../auth");
-const bcryt = require('bcrypt')
+const bcryt = require("bcrypt");
 module.exports = function (injectedStore) {
   let store = injectedStore;
 
   const login = async (username, password) => {
     const data = await store.query(TABLA, { username: username });
-    const isValid = await bcryt.compare(password,data.password)
-    if (isValid) { // Generar token;
-      return auth.sign(data);
+    if (!(Array.isArray(data) && data.length))
+      throw new Error("User or password incorrect");
+
+    const user = data.shift();
+
+    const isValid = await bcryt.compare(password, user.password);
+    if (isValid) {
+      // Generar token;
+      return auth.sign(user);
     } else {
       throw new Error("User or password incorrect");
     }
@@ -24,11 +30,11 @@ module.exports = function (injectedStore) {
     }
 
     if (data.password) {
-      authData.password = await bcryt.hash(data.password,5);
+      authData.password = await bcryt.hash(data.password, 5);
     }
 
     return store.upsert(TABLA, authData);
-  }
+  };
 
   return {
     upsert,
