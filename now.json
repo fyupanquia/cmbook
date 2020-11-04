@@ -23,5 +23,12 @@
             "src": "/api/post(.*)",
             "dest": "/post/index.js"
         }
-    ]
+    ],
+    "env": {
+        "JWT_SECRET":"@cmbook_jwt_secret",
+        "MYSQL_HOST":"@cmbook_mysql_host",
+        "MYSQL_USER":"@cmbook_mysql_user",
+        "MYSQL_PASSWORD":"@cmbook_mysql_password",
+        "MYSQL_DATABASE":"@cmbook_mysql_database"
+    }
 }
