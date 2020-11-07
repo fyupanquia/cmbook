@@ -3,8 +3,32 @@ const auth = require("../auth");
 const { nanoid } = require("nanoid");
 const TABLA = "users";
 
-module.exports = function (injectedStore) {
+module.exports = function (injectedStore, injectedCache) {
   let store = injectedStore;
+  let cache = injectedCache;
+  if (!store) {
+    store = require("../../../store/dummy");
+  }
+  if (!cache) {
+    cache = require("../../../store/dummy");
+  }
+
+  const list = async () => {
+    let users = await cache.list(TABLA);
+    if (!users) {
+      users = await store.list(TABLA);
+      cache.upsert(TABLA, users);
+    }
+    return users;
+  };
+  const get = async (id) => {
+    let user = await cache.get(`${TABLA}_${id}`, id);
+    if (!user) {
+      user = await store.get(TABLA, id);
+      cache.upsert(`${TABLA}_${id}`, user);
+    }
+    return user;
+  };
 
   const upsert = async (body) => {
     const user = {
@@ -35,15 +59,21 @@ module.exports = function (injectedStore) {
     });
   }
 
-  function getFollowed(id) {
-    return store.query(TABLA + "_follow", { user_from: id }, [
-      { table: TABLA, type: "inner", fromField: "user_from", toField: "id" },
-    ]);
+  const getFollowed = async (id) => {
+	const tableName = `${TABLA}_follow`
+	let follows = await cache.list(`${tableName}_${id}`);
+	if (!follows) {
+		follows =  await store.query(tableName, { user_from: id }, [
+		  { table: TABLA, type: "inner", fromField: "user_from", toField: "id" },
+		]);
+		cache.upsert(`${tableName}_${id}`, follows);
+	}
+	return follows
   }
 
   return {
-    list: async () => store.list(TABLA),
-    get: async (id) => store.get(TABLA, id),
+    list,
+    get,
     upsert,
     follow,
     getFollowed,

@@ -6,6 +6,7 @@ module.exports = function (injectedStore) {
 
   const login = async (username, password) => {
     const data = await store.query(TABLA, { username: username });
+    console.log(data);
     if (!(Array.isArray(data) && data.length))
       throw new Error("User or password incorrect");
 

@@ -31,13 +31,14 @@ const upsert = async (req, res, next) => {
   }
 };
 
-function follow(req, res, next) {
-  Controller.follow(req.user.id, req.params.id)
-    .then((data) => {
-      response.success(req, res, data, 201);
-    })
-    .catch(next);
-}
+const follow = async (req, res, next) => {
+  try {
+    const data = await Controller.follow(req.user.id, req.params.id);
+    response.success(req, res, data, 201);
+  } catch (error) {
+    return next(new Error(`It's imposible to follow this user`));
+  }
+};
 
 function getFollowed(req, res, next) {
   Controller.getFollowed(req._auth.id)

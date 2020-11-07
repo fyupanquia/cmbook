@@ -9,47 +9,28 @@ function createRemoteDB(host, port) {
     headers: { "content-type": "application/json" },
   });
 
-  function list(table) {
-    return req("get", table);
-  }
+  const list = (table) => req("get", table);
 
-  // function get(table, id)
-  // function upsert(table, data)
-  // function query(table, query, join)
+  const get = (table, id) => req("get", `${table}/${id}`);
+
+  const upsert = (table, data) => req("put", table, data);
+
+  const query = (table, query, join) =>
+    req("post", `${table}/query`, { query, join } );
+
+  const insert = (table, data) => req("post", table, data);
 
   async function req(method, table, data) {
-    let url = URL + "/" + table;
-    body = "";
-
-    const rsp = await instance[method](`/${table}`)
-    return rsp.data ? rsp.data.body : []
-    /*
-     new Promise((resolve, reject) => {
-      axios(
-        {
-          method,
-          headers: {
-            "content-type": "application/json",
-          },
-          url,
-          body,
-        },
-        (err, req, body) => {
-          if (err) {
-            console.error("Error con la base de datos remota", err);
-            return reject(err.message);
-          }
-
-          const resp = JSON.parse(body);
-          return resolve(resp.body);
-        }
-      );
-    });
-    */
+    const rsp = await instance[method](`/${table}`, data);
+    return rsp.data ? rsp.data.body : [];
   }
 
   return {
     list,
+    upsert,
+    get,
+    query,
+    insert,
   };
 }
 
